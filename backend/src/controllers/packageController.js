@@ -1,5 +1,11 @@
 const packageService = require("../services/packageService");
 
+const {
+    getSocketServerInstance
+} = require("../socket");
+
+//controladores de paquetes
+
 const getPackages = (req, res) => {
     const packages = packageService.getAllPackages();
 
@@ -25,6 +31,10 @@ const createPackage = (req, res) => {
 
     const newPackage = packageService.createPackage(req.body);
 
+    const io = getSocketServerInstance();
+
+    io.emit("packageCreated", newPackage);
+
     res.status(201).json({
         message: "Paquete creado correctamente",
         data: newPackage
@@ -46,6 +56,10 @@ const updatePackage = (req, res) => {
         });
     }
 
+    const io = getSocketServerInstance();
+
+    io.emit("packageUpdated", updatedPackage);
+
     res.json({
         message: "Paquete actualizado correctamente",
         data: updatedPackage
@@ -63,6 +77,12 @@ const deletePackage = (req, res) => {
             message: "Paquete no encontrado"
         });
     }
+
+    const io = getSocketServerInstance();
+
+    io.emit("packageDeleted", {
+        id: packageId
+    });
 
     res.json({
         message: "Paquete eliminado correctamente"

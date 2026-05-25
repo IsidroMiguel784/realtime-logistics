@@ -4,11 +4,17 @@ const router = express.Router();
 
 const packageController = require("../controllers/packageController");
 
+const validatePackageMiddleware = require("../middleware/validatePackageMiddleware");
+
 router.get("/", packageController.getPackages);
 
 router.get("/:id", packageController.getPackage);
 
-router.post("/", packageController.createPackage);
+router.post(
+    "/",
+    validatePackageMiddleware,
+    packageController.createPackage
+);
 
 router.put("/:id", packageController.updatePackage);
 
